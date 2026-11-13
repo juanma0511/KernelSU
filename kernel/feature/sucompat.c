@@ -320,19 +320,10 @@ static __always_inline void ksu_sucompat_user_execve(const char __user **filenam
 	if (!!escape_with_root_profile())
 		return;
 
-	struct path kpath;
-	if (!!kern_path("/data/adb/ksud", 0, &kpath))
-		goto no_ksud;
-
-	path_put(&kpath);
 	if (!ksyscall_execve_ksud(syscall_name, argv, envp))
 		return;
 
-	pr_info("su_compat: %s su->ksud!%s\n", syscall_name, (is_compat_task()) ? " [compat]" : "" );
-	*filename_user = ksud_user_path();
-	return;
-
-no_ksud:
+	// failure path
 	pr_info("su_compat: %s su->sh!%s\n", syscall_name, (is_compat_task()) ? " [compat]" : "" );
 	*filename_user = sh_user_path();
 	return;
@@ -446,20 +437,10 @@ static __always_inline void ksu_sucompat_kernel_execve(int *restrict fd, void **
 		u_envp = (void ***)&kenvp->ptr.compat;
 #endif
 
-	struct path kpath;
-	if (!!kern_path("/data/adb/ksud", 0, &kpath))
-		goto no_ksud;
-
-	path_put(&kpath);
 	if (!ksyscall_execve_ksud(function_name, u_argv, u_envp))
 		return;
 
-	pr_info("su_compat: %s su->ksud!%s\n", function_name, (is_compat_task()) ? " [compat]" : "");
-	constexpr char ksud[16] = KSUD_PATH;
-	memcpy_inline(*filename_ptr, ksud, sizeof(ksud));
-	return;
-
-no_ksud:
+	// failure path
 	pr_info("su_compat: %s su->sh!%s\n", function_name, (is_compat_task()) ? " [compat]" : "" );
 	constexpr char sh[16] = SH_PATH;
 	memcpy_inline(*filename_ptr, sh, sizeof(sh));
