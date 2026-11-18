@@ -10,6 +10,7 @@
 	#define CONFIG_KSU_HACK_ARM64_BRANCH_LINK 1
 	#define CONFIG_KSU_FEATURE_ADBROOT 1
 	#define CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED 1
+	#define CONFIG_KSU_HOSTSREDIRECT 1
 #endif // CONFIG_KSU_HEURISTIC_IN_TREE_BUILD
 
 // for in-tree, this has to be detected
@@ -113,10 +114,6 @@
 #include "downstream/slow_avc_audit_defs.h"
 #include "downstream/tiny_sulog.h"
 #include "downstream/toolkit.h"
-
-#ifdef CONFIG_KSU_HOSTSREDIRECT
-#include "downstream/ksu_hostsredirect.h"
-#endif
 
 
 // unity build
